@@ -24,6 +24,17 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@main
+
+      - name: Magic cache
+        uses: DeterminateSystems/magic-nix-cache-action@main
+
+      - name: Install skaffold
+        run: |
+          nix-env -iA nixos.skaffold
+
       - name: Push latest images
         timeout-minutes: 20
         run: |

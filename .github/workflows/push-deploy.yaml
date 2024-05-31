@@ -33,7 +33,7 @@ jobs:
 
       - name: Install skaffold
         run: |
-          nix-env -iA skaffold
+          nix-shell -p skaffold --command "skaffold dev --platform=linux/amd64"
 
       - name: Push latest images
         timeout-minutes: 20

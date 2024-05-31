@@ -33,7 +33,7 @@ jobs:
 
       - name: Install skaffold
         run: |
-          nix-env -iA nixos.skaffold
+          nix-env -iA skaffold
 
       - name: Push latest images
         timeout-minutes: 20

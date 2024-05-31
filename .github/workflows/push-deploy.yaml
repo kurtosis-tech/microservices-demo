@@ -20,15 +20,15 @@ on:
       - main
 jobs:
   push-deploy:
-    runs-on: [self-hosted, is-enabled]
+    runs-on: ubuntu-22.04
     steps:
-    - uses: actions/checkout@v4
-    - name: Push latest images to GCR
-      timeout-minutes: 20
-      run: |
-        skaffold config set --global local-cluster false
-        # tag with git hash
-        skaffold build --default-repo=gcr.io/$PROJECT_ID \
-                       --tag=$GITHUB_SHA
-      env:
-        PROJECT_ID: ${{ secrets.PROJECT_ID }}
+      - uses: actions/checkout@v4
+      - name: Push latest images
+        timeout-minutes: 20
+        run: |
+          skaffold config set --global local-cluster false
+          # tag with git hash
+          # skaffold build --default-repo=docker.io/lostbean --tag=$GITHUB_SHA
+          skaffold dev --platform=linux/amd64
+        env:
+          PROJECT_ID: ${{ secrets.PROJECT_ID }}

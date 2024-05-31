@@ -29,6 +29,7 @@ jobs:
           skaffold config set --global local-cluster false
           # tag with git hash
           # skaffold build --default-repo=docker.io/lostbean --tag=$GITHUB_SHA
+          #
           skaffold dev --platform=linux/amd64
         env:
           PROJECT_ID: ${{ secrets.PROJECT_ID }}

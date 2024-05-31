@@ -39,4 +39,4 @@ jobs:
 
       - name: Install skaffold
         run: |
-          nix-shell -p skaffold --command "skaffold build --default-repo=docker.io/lostbean --tag=$GITHUB_SHA --platform=linux/amd64"
+          nix-shell -p skaffold --command "skaffold build --default-repo=docker.io/lostbean --tag=$GITHUB_SHA --platform=linux/amd64,linux/arm64"

@@ -14,14 +14,31 @@
 
 # https://mcr.microsoft.com/product/dotnet/sdk
 FROM mcr.microsoft.com/dotnet/sdk:8.0.301-noble@sha256:e6982f8da3f29407d73d737af120bff652658c6c985ccf63e62f12ce49127cc7 as builder
+
+
+# Set default value for PLATFORM
+ARG PLATFORM
+
+# Determine the architecture and set the PLATFORM variable accordingly
+RUN ARCH=$(uname -m) && \
+    if [ "$ARCH" = "x86_64" ]; then \
+        echo "linux-amd64" > /etc/platform; \
+    elif [ "$ARCH" = "aarch64" ]; then \
+        echo "linux-arm64" > /etc/platform; \
+    else \
+        echo "unknown" > /etc/platform; \
+    fi
+RUN cat /etc/platform
+
 WORKDIR /app
 COPY cartservice.csproj .
-RUN dotnet restore cartservice.csproj \
-    -r linux-x64
+RUN export PLATFORM=$(cat /etc/platform) && dotnet restore cartservice.csproj -r $PLATFORM
 COPY . .
-RUN dotnet publish cartservice.csproj \
+
+RUN export PLATFORM=$(cat /etc/platform) && \
+    dotnet publish cartservice.csproj \
     -p:PublishSingleFile=true \
-    -r linux-x64 \
+    -r $PLATFORM \
     --self-contained true \
     -p:PublishTrimmed=True \
     -p:TrimMode=Full \

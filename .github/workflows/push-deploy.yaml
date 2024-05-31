@@ -31,17 +31,12 @@ jobs:
       - name: Magic cache
         uses: DeterminateSystems/magic-nix-cache-action@main
 
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
       - name: Install skaffold
         run: |
-          nix-shell -p skaffold --command "skaffold dev --platform=linux/amd64"
-
-      - name: Push latest images
-        timeout-minutes: 20
-        run: |
-          skaffold config set --global local-cluster false
-          # tag with git hash
-          # skaffold build --default-repo=docker.io/lostbean --tag=$GITHUB_SHA
-          #
-          skaffold dev --platform=linux/amd64
-        env:
-          PROJECT_ID: ${{ secrets.PROJECT_ID }}
+          nix-shell -p skaffold --command "skaffold build --default-repo=docker.io/lostbean --tag=$GITHUB_SHA --platform=linux/amd64"

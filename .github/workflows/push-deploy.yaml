@@ -18,6 +18,7 @@ on:
     # run on pushes to main
     branches:
       - main
+      - egomes/fix_arm_images
 jobs:
   push-deploy:
     runs-on: ubuntu-22.04

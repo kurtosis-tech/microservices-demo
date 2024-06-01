@@ -17,8 +17,7 @@ on:
   push:
     # run on pushes to main
     branches:
-      - main
-      - egomes/fix_arm_images
+      - kurtosis
 jobs:
   push-deploy:
     runs-on: ubuntu-22.04
@@ -42,7 +41,20 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Push both amd64 and arm64 images
+      - name: Cache skaffold image builds & config
+        uses: actions/cache@v2
+        with:
+          path: ~/.skaffold/
+          key: fixed-${{ github.sha }}
+          restore-keys: |
+            fixed-${{ github.sha }}
+            fixed-
+
+      - name: Push amd64 and arm64 images
         run: |
           nix-shell -p skaffold --command "skaffold build --default-repo=docker.io/lostbean --platform=linux/amd64,linux/arm64"
+
+      - name: Push amd64 and arm64 images as latest
+        if: github.ref == 'refs/heads/kurtosis'
+        run: |
           nix-shell -p skaffold --command "skaffold build --default-repo=docker.io/lostbean --platform=linux/amd64,linux/arm64 --tag=latest"

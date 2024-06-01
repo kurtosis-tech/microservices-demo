@@ -16,7 +16,7 @@ name: kustomize-build-ci
 on:
   push:
     branches:
-      - main
+      - kurtosis
     paths:
       - "kustomize/**"
       - ".github/workflows/kustomize-build-ci.yaml"

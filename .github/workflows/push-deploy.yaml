@@ -17,18 +17,44 @@ on:
   push:
     # run on pushes to main
     branches:
-      - main
+      - kurtosis
 jobs:
   push-deploy:
-    runs-on: [self-hosted, is-enabled]
+    runs-on: ubuntu-22.04
     steps:
-    - uses: actions/checkout@v4
-    - name: Push latest images to GCR
-      timeout-minutes: 20
-      run: |
-        skaffold config set --global local-cluster false
-        # tag with git hash
-        skaffold build --default-repo=gcr.io/$PROJECT_ID \
-                       --tag=$GITHUB_SHA
-      env:
-        PROJECT_ID: ${{ secrets.PROJECT_ID }}
+      - uses: actions/checkout@v4
+
+      - run: sudo apt-get install -y qemu-user-static
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@main
+        with:
+          extra_nix_config: |
+            system = aarch64-linux
+
+      - name: Magic cache
+        uses: DeterminateSystems/magic-nix-cache-action@main
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Cache skaffold image builds & config
+        uses: actions/cache@v2
+        with:
+          path: ~/.skaffold/
+          key: fixed-${{ github.sha }}
+          restore-keys: |
+            fixed-${{ github.sha }}
+            fixed-
+
+      - name: Push amd64 and arm64 images
+        run: |
+          nix-shell -p skaffold --command "skaffold build --default-repo=docker.io/lostbean --platform=linux/amd64,linux/arm64"
+
+      - name: Push amd64 and arm64 images as latest
+        if: github.ref == 'refs/heads/kurtosis'
+        run: |
+          nix-shell -p skaffold --command "skaffold build --default-repo=docker.io/lostbean --platform=linux/amd64,linux/arm64 --tag=latest"

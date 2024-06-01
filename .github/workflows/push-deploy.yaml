@@ -37,11 +37,7 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Push amd64 images
+      - name: Push both amd64 and arm64 images
         run: |
-          nix-shell -p skaffold --command "skaffold build --default-repo=docker.io/lostbean --platform=linux/amd64"
-          nix-shell -p skaffold --command "skaffold build --default-repo=docker.io/lostbean --platform=linux/amd64 --tag=latest"
-
-      # - name: Push arm64 images
-      #   run: |
-      #     nix-shell -p skaffold --command "skaffold build --default-repo=docker.io/lostbean --platform=linux/arm64"
+          nix-shell -p skaffold --command "skaffold build --default-repo=docker.io/lostbean --platform=linux/amd64,linux/arm64"
+          nix-shell -p skaffold --command "skaffold build --default-repo=docker.io/lostbean --platform=linux/amd64,linux/arm64 --tag=latest"

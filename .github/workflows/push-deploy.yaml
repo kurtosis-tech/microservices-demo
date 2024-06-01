@@ -40,7 +40,8 @@ jobs:
       - name: Push amd64 images
         run: |
           nix-shell -p skaffold --command "skaffold build --default-repo=docker.io/lostbean --platform=linux/amd64"
+          nix-shell -p skaffold --command "skaffold build --default-repo=docker.io/lostbean --platform=linux/amd64 --tag=latest"
 
-      - name: Push arm64 images
-        run: |
-          nix-shell -p skaffold --command "skaffold build --default-repo=docker.io/lostbean --platform=linux/arm64"
+      # - name: Push arm64 images
+      #   run: |
+      #     nix-shell -p skaffold --command "skaffold build --default-repo=docker.io/lostbean --platform=linux/arm64"

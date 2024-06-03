@@ -18,6 +18,7 @@ on:
     # run on pushes to main
     branches:
       - kurtosis
+      - frontend-demo-v2
 jobs:
   push-deploy:
     runs-on: ubuntu-22.04
@@ -51,6 +52,7 @@ jobs:
             fixed-
 
       - name: Push amd64 and arm64 images
+        if: github.ref == 'refs/heads/kurtosis'
         run: |
           nix-shell -p skaffold --command "skaffold build --default-repo=docker.io/lostbean --platform=linux/amd64,linux/arm64"
 
@@ -58,3 +60,9 @@ jobs:
         if: github.ref == 'refs/heads/kurtosis'
         run: |
           nix-shell -p skaffold --command "skaffold build --default-repo=docker.io/lostbean --platform=linux/amd64,linux/arm64 --tag=latest"
+
+      - name: Push amd64 and arm64 images as latest
+        if: github.ref == 'refs/heads/frontend-demo-v2'
+        run: |
+          nix-shell -p skaffold --command "skaffold build --default-repo=docker.io/lostbean --build-image=frontend --platform=linux/amd64,linux/arm64"
+          nix-shell -p skaffold --command "skaffold build --default-repo=docker.io/lostbean --build-image=frontend --platform=linux/amd64,linux/arm64 --tag=demo-v2"

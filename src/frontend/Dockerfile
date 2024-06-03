@@ -35,5 +35,7 @@ COPY ./static ./static
 # See https://golang.org/pkg/runtime/
 ENV GOTRACEBACK=single
 
+ENV FRONTEND_MESSAGE="Kardinal Demo V2"
+
 EXPOSE 8080
 ENTRYPOINT ["/src/server"]
